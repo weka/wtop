@@ -48,22 +48,18 @@ python3 wtop.py
 
 ## Usage
 
-Run wtop in your terminal.
+Run `wtop` in your terminal.
 
-Default mode shows client (frontend) metrics.
+- Default mode shows **client (frontend) metrics**.  
+- Switch to **backend view** with the appropriate key (see below).  
 
-Switch to backend view with the appropriate key (see below).
+### Keyboard Shortcuts
 
-Keyboard Shortcuts
-Key	Action
-```
-q	Quit WTOP
-TAB	Toggle between client and backend view
-← / →	Scroll through available metrics/columns
-↑ / ↓	Navigate table rows
-h	Help / column descriptions
-```
-Example Output
+| Key       | Action                                |
+|-----------|---------------------------------------|
+| `q`       | Quit WTOP                             |
+| `m`       | Switch modes between client and backend view|
+| `h`       | Help / column descriptions            |
 
 
 ## Building from Source
@@ -78,20 +74,20 @@ The binary will be available in the dist/ directory:
 ```
 ./dist/wtop
 ```
-### Requirements
+## Requirements
 
-Python 3.6+
+- Python 3.6+
 
-Dependencies:
+### Dependencies
 
-urwid
-
-json, csv (standard library)
+- [urwid](https://urwid.org/)
+- `json` (Python standard library)
+- `csv` (Python standard library)
 
 Install with:
-
+```
 pip install urwid
-
+```
 ## Contributing
 
 Pull requests are welcome! If you’d like to add new metrics, improve the UI, or extend backend integrations, please open an issue or PR.
