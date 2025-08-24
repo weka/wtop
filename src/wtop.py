@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-WEKA Performance Monitor TUI
-A real-time terminal user interface for monitoring WEKA cluster performance.
+WTOP - a WEKA Performance Monitor TUI
+A real-time terminal user interface for monitoring WEKA front-end and back-end performance.
 """
 
 import urwid
