@@ -1,8 +1,6 @@
 # WTOP
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/weka/wtop)](https://github.com/weka/wtop/releases)
-[![Downloads](https://img.shields.io/github/downloads/weka/wtop/total.svg)](https://github.com/weka/wtop/releases)
 [![Issues](https://img.shields.io/github/issues/weka/wtop)](https://github.com/weka/wtop/issues)
 
 **WTOP** (WEKA TOP) is an open source, real-time **terminal user interface (TUI)** for monitoring **WEKA performance metrics** across frontend and backend hosts.  
