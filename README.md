@@ -60,6 +60,9 @@ If there is no active WEKA login then you will see this perpetually (resolve by 
 Status: Initializing...
 Status: Fetching data...
 ```
+### Example screen capture
+This is an example of normal output (with a trivial number of clients):
+![wtop data capture](images/wtop.png)
 
 
 ### Keyboard Shortcuts
