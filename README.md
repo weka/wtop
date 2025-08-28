@@ -21,6 +21,8 @@ It provides live CPU, IOPS, throughput, and latency information in a top-like di
 
 ## Quick Start
 
+Choose one method.
+
 ### Clone and run
 
 ```bash
@@ -36,7 +38,7 @@ chmod +x wtop
 ./wtop
 ```
 
-## Installation from Source
+### Installation from Source
 
 Clone the repository and install dependencies:
 ```
@@ -51,7 +53,14 @@ python3 wtop.py
 Run `wtop` in your terminal.
 
 - Default mode shows **client (frontend) metrics**.  
-- Switch to **backend view** with the appropriate key (see below).  
+- Switch to **backend view** with the appropriate key (see below).
+
+If there is no active WEKA login then you will see this perpetulally (resolve by creating a WEKA mount):
+```
+Status: Initializing...
+Status: Fetching data...
+```
+
 
 ### Keyboard Shortcuts
 
