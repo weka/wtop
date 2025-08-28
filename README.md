@@ -55,7 +55,7 @@ Run `wtop` in your terminal.
 - Default mode shows **client (frontend) metrics**.  
 - Switch to **backend view** with the appropriate key (see below).
 
-If there is no active WEKA login then you will see this perpetulally (resolve by creating a WEKA mount):
+If there is no active WEKA login then you will see this perpetually (resolve by issuing `weka user login`):
 ```
 Status: Initializing...
 Status: Fetching data...
