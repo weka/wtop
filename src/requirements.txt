@@ -1,2 +1,3 @@
 # Requires Python 3.6+
-urwid
+urwid>=2.1.2
+psutil>=5.8.0

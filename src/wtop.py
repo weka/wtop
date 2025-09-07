@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 WTOP - a WEKA Performance Monitor TUI
-A real-time terminal user interface for monitoring WEKA front-end and back-end performance.
+A real-time terminal user interface for monitoring WEKA cluster performance.
 """
 
-import urwid
+import urwid  # pyright: ignore[reportMissingImports]
 import subprocess
 import json
 import csv
@@ -32,6 +32,8 @@ class WekaMonitor:
             'Writes/s': 'Writes/s',
             'Read Latency(µs)': 'Read Latency (µs)',
             'Write Latency(µs)': 'Write Latency (µs)',
+            'Read Throughput': 'Read Throughput',
+            'Write Throughput': 'Write Throughput',
             'L6 Recv': 'L6 Recv',
             'L6 Sent': 'L6 Sent',
             'OBS Upload': 'OBS Upload',
@@ -95,7 +97,7 @@ class WekaMonitor:
         ]
         
         # Header
-        self.header = urwid.Text("WTOP the WEKA Performance Monitor - Press 'h' for help, 'm' to switch modes, 'q' to quit", align='left')
+        self.header = urwid.Text("WEKA Performance Monitor - Press 'h' for help, 'm' to switch modes, 'q' to quit", align='left')
         header_attr = urwid.AttrMap(self.header, 'header')
         
         # Mode indicator
@@ -270,7 +272,17 @@ class WekaMonitor:
                 self.cluster_status = optimized_data  # Store optimized status data
                 return optimized_data.get('activity', {})
             else:
-                return {}
+                # Check for specific error messages in stderr
+                error_output = result.stderr.strip()
+                if "Failed connecting to http://127.0.0.1:14000/api/v1" in error_output:
+                    print("Error: Failed connecting to local WEKA service. Make sure WEKA is running on this host.")
+                    sys.exit(1)
+                elif "Authentication Failed" in error_output:
+                    print("Error: Authentication failed. Please check your WEKA credentials.")
+                    sys.exit(1)
+                else:
+                    # For other errors, just return empty data
+                    return {}
                 
         except subprocess.TimeoutExpired:
             # Command timed out, return empty data but don't crash
@@ -297,6 +309,8 @@ class WekaMonitor:
                 'Writes/s': 'writeps',
                 'Read Latency(µs)': 'rlatency',
                 'Write Latency(µs)': 'wlatency',
+                'Read Throughput': 'readbps',
+                'Write Throughput': 'writebps',
                 'L6 Recv': 'l6recv',
                 'L6 Sent': 'l6send',
                 'OBS Upload': 'upload',
@@ -336,7 +350,17 @@ class WekaMonitor:
                     parsed_data = self.parse_csv_stats_aggregated(result.stdout)
                 return parsed_data
             else:
-                return {}
+                # Check for specific error messages in stderr
+                error_output = result.stderr.strip()
+                if "Failed connecting to http://127.0.0.1:14000/api/v1" in error_output:
+                    print("Error: Failed connecting to local WEKA service. Make sure WEKA is running on this host.")
+                    sys.exit(1)
+                elif "Authentication Failed" in error_output:
+                    print("Error: Authentication failed. Please check your WEKA credentials.")
+                    sys.exit(1)
+                else:
+                    # For other errors, just return empty data
+                    return {}
                 
         except subprocess.TimeoutExpired:
             # Command timed out, return empty data but don't crash
@@ -359,6 +383,8 @@ class WekaMonitor:
                 'Writes/s': 'writeps',
                 'Read Latency(µs)': 'rlatency',
                 'Write Latency(µs)': 'wlatency',
+                'Read Throughput': 'readbps',
+                'Write Throughput': 'writebps',
                 'L6 Recv': 'l6recv',
                 'L6 Sent': 'l6send',
                 'OBS Upload': 'upload',
@@ -386,8 +412,17 @@ class WekaMonitor:
                     print(f"Warning: No node details parsed for host {hostname}")
                 return parsed_data
             else:
-                print(f"Warning: weka stats command failed for host {hostname}: {result.stderr}")
-                return []
+                # Check for specific error messages in stderr
+                error_output = result.stderr.strip()
+                if "Failed connecting to http://127.0.0.1:14000/api/v1" in error_output:
+                    print("Error: Failed connecting to local WEKA service. Make sure WEKA is running on this host.")
+                    sys.exit(1)
+                elif "Authentication Failed" in error_output:
+                    print("Error: Authentication failed. Please check your WEKA credentials.")
+                    sys.exit(1)
+                else:
+                    print(f"Warning: weka stats command failed for host {hostname}: {result.stderr}")
+                    return []
                 
         except subprocess.TimeoutExpired:
             # Command timed out, return empty data but don't crash
@@ -410,6 +445,8 @@ class WekaMonitor:
                 'Writes/s': 'writeps',
                 'Read Latency(µs)': 'rlatency',
                 'Write Latency(µs)': 'wlatency',
+                'Read Throughput': 'readbps',
+                'Write Throughput': 'writebps',
                 'L6 Recv': 'l6recv',
                 'L6 Sent': 'l6send',
                 'OBS Upload': 'upload',
@@ -439,8 +476,17 @@ class WekaMonitor:
                     print(f"Warning: No node details parsed for backend host {base_hostname}")
                 return parsed_data
             else:
-                print(f"Warning: weka stats command failed for backend host {base_hostname}: {result.stderr}")
-                return []
+                # Check for specific error messages in stderr
+                error_output = result.stderr.strip()
+                if "Failed connecting to http://127.0.0.1:14000/api/v1" in error_output:
+                    print("Error: Failed connecting to local WEKA service. Make sure WEKA is running on this host.")
+                    sys.exit(1)
+                elif "Authentication Failed" in error_output:
+                    print("Error: Authentication failed. Please check your WEKA credentials.")
+                    sys.exit(1)
+                else:
+                    print(f"Warning: weka stats command failed for backend host {base_hostname}: {result.stderr}")
+                    return []
                 
         except subprocess.TimeoutExpired:
             # Command timed out, return empty data but don't crash
@@ -476,6 +522,8 @@ class WekaMonitor:
                     'Writes/s': self._to_float(row.get('Writes/s', 0)),
                     'Read Latency(µs)': self._to_float(row.get('Read Latency(µs)', 0)),
                     'Write Latency(µs)': self._to_float(row.get('Write Latency(µs)', 0)),
+                    'Read Throughput': self._to_float_bandwidth(row.get('Read', 0)),
+                    'Write Throughput': self._to_float_bandwidth(row.get('Write', 0)),
                     'L6 Recv': self._to_float_bandwidth(row.get('L6 Recv', 0)),
                     'L6 Sent': self._to_float_bandwidth(row.get('L6 Sent', 0)),
                     'OBS Upload': self._to_float_bandwidth(row.get('OBS Upload', 0)),
@@ -498,6 +546,8 @@ class WekaMonitor:
                     'Writes/s': 0.0,
                     'Read Latency(µs)': 0.0,
                     'Write Latency(µs)': 0.0,
+                    'Read Throughput': 0.0,
+                    'Write Throughput': 0.0,
                     'L6 Recv': 0.0,
                     'L6 Sent': 0.0,
                     'OBS Upload': 0.0,
@@ -509,7 +559,7 @@ class WekaMonitor:
                 node_count = len(nodes)
                 for node in nodes:
                     # Sum ops/throughput metrics
-                    for key in ['Ops/s', 'Reads/s', 'Writes/s', 'L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent']:
+                    for key in ['Ops/s', 'Reads/s', 'Writes/s', 'L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent', 'Read Throughput', 'Write Throughput']:
                         if key in node and isinstance(node[key], (int, float)):
                             aggregated[key] += node[key]
                     
@@ -567,6 +617,8 @@ class WekaMonitor:
                     'Writes/s': self._to_float(row.get('Writes/s', 0)),
                     'Read Latency(µs)': self._to_float(row.get('Read Latency(µs)', 0)),
                     'Write Latency(µs)': self._to_float(row.get('Write Latency(µs)', 0)),
+                    'Read Throughput': self._to_float_bandwidth(row.get('Read', 0)),
+                    'Write Throughput': self._to_float_bandwidth(row.get('Write', 0)),
                     'L6 Recv': self._to_float_bandwidth(row.get('L6 Recv', 0)),
                     'L6 Sent': self._to_float_bandwidth(row.get('L6 Sent', 0)),
                     'OBS Upload': self._to_float_bandwidth(row.get('OBS Upload', 0)),
@@ -591,6 +643,8 @@ class WekaMonitor:
                     'Writes/s': 0.0,
                     'Read Latency(µs)': 0.0,
                     'Write Latency(µs)': 0.0,
+                    'Read Throughput': 0.0,
+                    'Write Throughput': 0.0,
                     'L6 Recv': 0.0,
                     'L6 Sent': 0.0,
                     'OBS Upload': 0.0,
@@ -602,7 +656,7 @@ class WekaMonitor:
                 node_count = len(nodes)
                 for node in nodes:
                     # Sum ops/throughput metrics
-                    for key in ['Ops/s', 'Reads/s', 'Writes/s', 'L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent']:
+                    for key in ['Ops/s', 'Reads/s', 'Writes/s', 'L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent', 'Read Throughput', 'Write Throughput']:
                         if key in node and isinstance(node[key], (int, float)):
                             aggregated[key] += node[key]
                     
@@ -729,10 +783,10 @@ class WekaMonitor:
                     'node': node_id,
                     'hostname': row.get('Hostname', 'N/A'),
                     'Writes/s': self._to_float(row.get('Writes/s', 0)),
-                    'Write': self._to_float_bandwidth(row.get('Write', 0)),
+                    'Write Throughput': self._to_float_bandwidth(row.get('Write', 0)),
                     'Write Latency(µs)': self._to_float(row.get('Write Latency(µs)', 0)),
                     'Reads/s': self._to_float(row.get('Reads/s', 0)),
-                    'Read': self._to_float_bandwidth(row.get('Read', 0)),
+                    'Read Throughput': self._to_float_bandwidth(row.get('Read', 0)),
                     'Read Latency(µs)': self._to_float(row.get('Read Latency(µs)', 0)),
                     'Ops/s': self._to_float(row.get('Ops/s', 0)),
                     'CPU%': self._to_float(row.get('CPU%', 0)),
@@ -792,10 +846,10 @@ class WekaMonitor:
                     'hostname': hostname,
                     'role': role,
                     'Writes/s': self._to_float(row.get('Writes/s', 0)),
-                    'Write': self._to_float_bandwidth(row.get('Write', 0)),
+                    'Write Throughput': self._to_float_bandwidth(row.get('Write', 0)),
                     'Write Latency(µs)': self._to_float(row.get('Write Latency(µs)', 0)),
                     'Reads/s': self._to_float(row.get('Reads/s', 0)),
-                    'Read': self._to_float_bandwidth(row.get('Read', 0)),
+                    'Read Throughput': self._to_float_bandwidth(row.get('Read', 0)),
                     'Read Latency(µs)': self._to_float(row.get('Read Latency(µs)', 0)),
                     'Ops/s': self._to_float(row.get('Ops/s', 0)),
                     'CPU%': self._to_float(row.get('CPU%', 0)),
@@ -948,7 +1002,7 @@ class WekaMonitor:
             
             # Format the display
             status_text = f"Release: {version} | Cluster: {cluster_name} | Status: {protection} | Capacity: {self.format_capacity(total_capacity)} | Used: {self.format_capacity(used_capacity)} | IO-Nodes: {active_io_nodes} | Buckets: {total_buckets} | Active Buckets: {active_buckets} | Down Buckets: {down_buckets} | Alerts: {alert_count}"
-            status_text += f"\nOPS: {self.format_ops(total_ops)} (R:{self.format_ops(read_ops)} W:{self.format_ops(write_ops)}) | Throughput: {self.format_throughput(total_throughput)} (R:{self.format_throughput(read_throughput)} W:{self.format_throughput(write_throughput)})"
+            status_text += f"\nOPS: {self.format_ops(total_ops)} | IOPS: R:{self.format_ops(read_ops)} W:{self.format_ops(write_ops)} | Throughput: R:{self.format_throughput(read_throughput)} W:{self.format_throughput(write_throughput)}"
             # status_text += f"\nBuckets: {total_buckets} | Active Buckets: {active_buckets} | Down Buckets: {down_buckets}"
             
             self.cluster_status_text.set_text(status_text)
@@ -996,7 +1050,7 @@ class WekaMonitor:
                         display_value = f"{value:.2f}"
                     elif col in ['Ops/s', 'Reads/s', 'Writes/s']:
                         display_value = self.format_ops(value)
-                    elif col in ['L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent']:
+                    elif col in ['L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent', 'Read Throughput', 'Write Throughput']:
                         display_value = self.format_throughput(value)
                     else:
                         display_value = f"{value}"
@@ -1036,7 +1090,7 @@ class WekaMonitor:
     def show_help_screen(self):
         """Display the help screen"""
         help_text = [
-            "WTOP the WEKA Performance Monitor - Help",
+            "WEKA Performance Monitor - Help",
             "",
             "Navigation & Control:",
             "q - Quit the application",
@@ -1073,9 +1127,9 @@ class WekaMonitor:
             "• Drill-down: Shows all process types for a selected backend host",
             "",
             "Backend Role Filtering (in drill-down):",
-            "1 - Toggle DRIVES processes on/off",
-            "2 - Toggle COMPUTE processes on/off", 
-            "3 - Toggle FRONTEND processes on/off",
+            "d - Toggle DRIVES processes on/off",
+            "c - Toggle COMPUTE processes on/off", 
+            "f - Toggle FRONTEND processes on/off",
             "",
             "Press any key to continue..."
         ]
@@ -1145,7 +1199,7 @@ class WekaMonitor:
                         display_value = f"{value:.2f} {label}"
                     elif col in ['Ops/s', 'Reads/s', 'Writes/s']:
                         display_value = f"{self.format_ops(value)} {label}"
-                    elif col in ['L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent']:
+                    elif col in ['L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent', 'Read Throughput', 'Write Throughput']:
                         display_value = f"{self.format_throughput(value)} {label}"
                     else:
                         display_value = f"{value} {label}"
@@ -1194,7 +1248,7 @@ class WekaMonitor:
                         display_value = f"{value:.2f}"
                     elif col in ['Ops/s', 'Reads/s', 'Writes/s']:
                         display_value = self.format_ops(value)
-                    elif col in ['L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent']:
+                    elif col in ['L6 Recv', 'L6 Sent', 'OBS Upload', 'OBS Download', 'RDMA Recv', 'RDMA Sent', 'Read Throughput', 'Write Throughput']:
                         display_value = self.format_throughput(value)
                     else:
                         display_value = f"{value}"
@@ -1227,6 +1281,9 @@ class WekaMonitor:
         # Update table
         self.table.body = urwid.SimpleListWalker(rows)
         
+        # Update cluster status display to show current OPS and throughput
+        self.update_cluster_status_display()
+        
         # Update footer using the centralized footer logic
         self.update_footer()
 
@@ -1251,7 +1308,7 @@ class WekaMonitor:
             filter_status = ""
             if self.current_mode == 'backend':
                 active_filters = [role for role, active in self.role_filters.items() if active]
-                filter_status = f" | Filters: {', '.join(active_filters)} | Press 1/2/3 to toggle roles"
+                filter_status = f" | Filters: {', '.join(active_filters)} | Press d/c/f to toggle roles"
             
             left_text = f"Host: {base_hostname} | Refresh: {self.refresh_rate}s{filter_status}"
             right_text = "Press 'h' for help, 'q' to quit"
@@ -1286,7 +1343,7 @@ class WekaMonitor:
             filter_status = ""
             if self.current_mode == 'backend':
                 active_filters = [role for role, active in self.role_filters.items() if active]
-                filter_status = f" | Filters: {', '.join(active_filters)} | Press 1/2/3 to toggle roles"
+                filter_status = f" | Filters: {', '.join(active_filters)} | Press d/c/f to toggle roles"
             
             if self.row_selection_input.startswith('s'):
                 left_text = f"Host: {base_hostname} | Refresh: {self.refresh_rate}s | : {self.row_selection_input} | Type +3 or -3, Enter to sort, Esc to cancel{filter_status}"
@@ -1370,10 +1427,10 @@ class WekaMonitor:
         elif key_str == 'r':
             # Remove column
             self.remove_column()
-        elif key_str in ('1', '2', '3') and self.current_view == 'node_details' and self.current_mode == 'backend':
+        elif key_str in ('d', 'c', 'f') and self.current_view == 'node_details' and self.current_mode == 'backend':
             # Role filter shortcuts for backend drill-down
-            # 1 = DRIVES, 2 = COMPUTE, 3 = FRONTEND
-            role_map = {'1': 'DRIVES', '2': 'COMPUTE', '3': 'FRONTEND'}
+            # d = DRIVES, c = COMPUTE, f = FRONTEND
+            role_map = {'d': 'DRIVES', 'c': 'COMPUTE', 'f': 'FRONTEND'}
             role = role_map.get(key_str)
             if role:
                 self.role_filters[role] = not self.role_filters[role]  # Toggle filter
@@ -1523,7 +1580,7 @@ class WekaMonitor:
     def get_unique_initial_metrics(self):
         """Get a list of unique initial metrics for the columns"""
         # Start with the default metrics but ensure they're unique
-        default_metrics = ['CPU%', 'Ops/s', 'Reads/s', 'Writes/s', 'Read Latency(µs)', 'Write Latency(µs)']
+        default_metrics = ['CPU%', 'Ops/s', 'Reads/s', 'Writes/s', 'Read Latency(µs)', 'Write Latency(µs)', 'Read Throughput', 'Write Throughput']
         
         # Get all available metrics
         available_metrics = [col for col in self.available_metrics.keys() if col not in ['Hostname']]
