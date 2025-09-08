@@ -13,7 +13,7 @@
 - **Dynamic column management** - add, remove, and cycle through different metrics
 - **Portable** - works on Linux hosts with Python 3.6.8+
 - **Clean TUI interface** with color-coded metrics  
-- 🚀 Distributed as a **Python script** or as a **single-file binary**  
+- Distributed as a **Python script** and as a **single-file binary**  
 
 ## Requirements
 
@@ -49,19 +49,24 @@ cd wtop/src
 pip install -r requirements.txt
 python3 wtop.py
 ```
+#### Dependencies
+
+- [urwid](https://urwid.org/)
+- `json` (Python standard library)
+- `csv` (Python standard library)
+
+Install with:
+```
+pip install urwid
+```
 
 ## Usage
 
 Run `wtop` in your terminal.
 
 - Default mode shows **client (frontend) metrics**.  
-- Switch to **backend view** with the appropriate key (see below).
+- Switch to **backend view** with the **m** key.
 
-If there is no active WEKA login then you will see this perpetually (resolve by issuing `weka user login`):
-```
-Status: Initializing...
-Status: Fetching data...
-```
 ### Command Line Options
 
 The application runs with default settings and can be controlled entirely through the TUI interface.
@@ -168,7 +173,7 @@ The TUI executes two WEKA commands to gather data:
 3. **No data displayed**
    - Check **weka status**
    - Verify network connectivity to cluster nodes
-   - Check **weka service status**
+   - Check **weka local status**
 
 4. **Display issues**
    - Ensure your terminal supports the required colors
@@ -180,30 +185,6 @@ The TUI executes two WEKA commands to gather data:
 - **Column count**: More columns increase display complexity but provide more information
 - **Network impact**: Each refresh executes WEKA commands, consider cluster load
 
-## Building from Source
-
-To build a standalone binary with PyInstaller
-```
-pip install pyinstaller
-pyinstaller --onefile wtop.py
-```
-
-The binary will be available in the dist/ directory:
-```
-./dist/wtop
-```
-
-
-### Dependencies
-
-- [urwid](https://urwid.org/)
-- `json` (Python standard library)
-- `csv` (Python standard library)
-
-Install with:
-```
-pip install urwid
-```
 ## Contributing
 
 This is a focused monitoring tool for WEKA clusters. Contributions are welcome for:
