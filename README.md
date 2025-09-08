@@ -92,10 +92,10 @@ The TUI monitors the following metrics from WEKA:
 - **Node ID** - Node identifier
 - **Hostname** - Host name
 - **Writes/s** - Write operations per second
-- **Write (B/s)** - Write bandwidth in bytes per second
+- **Write Throughput** - Write bandwidth in bytes per second (only for clients)
 - **Write Latency (µs)** - Write latency in microseconds
 - **Reads/s** - Read operations per second
-- **Read (B/s)** - Read bandwidth in bytes per second
+- **Read Throughput** - Read bandwidth in bytes per second (only for clients)
 - **Read Latency (µs)** - Read latency in microseconds
 - **Ops/s** - Total operations per second
 - **CPU %** - CPU utilization percentage
